@@ -17,4 +17,4 @@ if __name__ == "__main__":
     r = 0.03
     sigma = 0.2
     test_object = European_Call_BS(S, K, T, r, sigma)
-    # test Yjj 2
+    # test Yjj 3
