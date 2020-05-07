@@ -50,6 +50,18 @@ class BSBaseModel(object):
     def get_delta_numerical(self):
         pass
 
+    def get_gamma_numerical(self):
+        pass
+
+    def get_theta_numerical(self):
+        pass
+
+    def get_rho_numerical(self):
+        pass
+
+    def get_vega_numerical(self):
+        pass
+
     # mutators and accessors
     def set_S(self, S_):
         self.S = S_
