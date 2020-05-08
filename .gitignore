@@ -1,3 +1,11 @@
 # Project exclude paths
+
+# Yifu Jason He
 /venv/
+.idea/
+.DS_Store
+
+# Junyi Yuan
 *.xml
+
+#Junjian Yao
