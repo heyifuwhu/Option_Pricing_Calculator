@@ -110,3 +110,4 @@ if __name__ == "__main__":
     test_object = European_Call_BS(S, K, T, r, sigma)
 
     print(test_object.get_delta_numerical())
+    # test 04-08-2020
