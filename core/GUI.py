@@ -1,7 +1,7 @@
 import tkinter
 from tkinter import *
 from tkinter import ttk
-
+from Tree_Model_Base import tree_model
 class StartPage(object):
     def __init__(self):
         self.root=Tk()
@@ -91,6 +91,7 @@ class CalculatorPage(object):
             Label(self.root, text='Use Monte Carlo: ').grid(row=r, sticky=W)
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+1)
+        elif self.modelType=="Monte Carlo":
 
     def get_parameter_BS(self):
         vlist = []
