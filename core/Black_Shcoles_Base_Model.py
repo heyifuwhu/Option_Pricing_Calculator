@@ -26,6 +26,7 @@ class BSBaseModel(object):
     def get_Option_Price(self):
         pass
 
+
     @abc.abstractmethod
     def get_delta(self):
         pass
@@ -48,6 +49,18 @@ class BSBaseModel(object):
 
     @abc.abstractmethod
     def get_delta_numerical(self):
+        pass
+
+    def get_gamma_numerical(self):
+        pass
+
+    def get_theta_numerical(self):
+        pass
+
+    def get_rho_numerical(self):
+        pass
+
+    def get_vega_numerical(self):
         pass
 
     # mutators and accessors

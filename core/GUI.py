@@ -68,6 +68,28 @@ class CalculatorPage(object):
             Label(self.root, text='Use BS Model: ').grid(row=r, sticky=W)
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
         elif self.modelType=="Monte Carlo":
+            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+                     'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate','num_of_path']
+            self.elist = [] # for parameters
+            r = 5 # r start from 0 and now is 3
+            for param in self.plist:
+                Label(self.root, text=param).grid(column=0, sticky=W)
+                e = Entry(self.root)
+                e.grid(row=r, column=1, columnspan=2, sticky=W+E)
+                self.elist.append(e)
+                r += 1
+            Button(self.root, text='Calculate',command = self.get_parameter_BS).grid(row=r)
+            r += 1
+            self.answ = Label(self.root, text='The result is as follows:')
+            self.answ.grid(row=r, columnspan=3)
+            r += 1
+            self.MC = Label(self.root)
+            #self.mc = Label(self.root)
+            self.MC.grid(row=r, columnspan=2, sticky=E)
+            #self.mc.grid(row=r+1, columnspan=2, sticky=E)
+            Label(self.root, text='Use Monte Carlo: ').grid(row=r, sticky=W)
+            #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
+
     def get_parameter_BS(self):
         vlist = []
         for e in self.elist:
@@ -83,7 +105,7 @@ class CalculatorPage(object):
         self.answ.config(text='The result is as follows:', fg='black')
         self.bs.config(text=str("%.8f" % (optionPrice/10)))
         #self.mc.config(text=str("%.8f" % (optionPrice*10)))
-    def get_parameter_BS(self):
+    def get_parameter_MC(self):
         vlist = []
         for e in self.elist:
             try:
