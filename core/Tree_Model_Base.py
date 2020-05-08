@@ -14,7 +14,7 @@ class tree_model(object):
     """
 
     def __init__(self, S_: float, K_: float, T_: float, r_: float, sigma_: float, div_: float = 0):
-        self.S = S_git
+        self.S = S_
         self.K = K_
         self.T = T_
         self.r = r_
@@ -49,67 +49,32 @@ class tree_model(object):
                 C = disc * (p * C[:-1] + q * C[1:])
         return C[0]
 
-    def Multipl_Binomial_Tree_American(Option, K, T, S, r, N, u, d):
-        """
-        Parameters
-        ----------
-        Option: str
-            "call" or "put"
-        K: float
-            strike price
-        T: float
-            time to maturity
-        S: float
-            spot price
-        r: float
-            interest rate
-        N: int
-            number of period
-        u: float
-            upward
-
-        d: float
-            downward factor
-        Returns
-        ----------
-        res: float
-            option price
-        """
+    def American_Binomial_Multiplicative(self, option_type, N, u, d):
         # record value
-        dt = T / N
-        p = (np.exp(r * dt) - d) / (u - d)
+        dt = self.T / N
+        p = (np.exp(self.r * dt) - d) / (u - d)
         q = 1 - p
-        disc = np.exp(-r * dt)
+        disc = np.exp(-self.r * dt)
 
         # initialize underlying asset price
-        St = np.asarray([S * u ** (N - i) * d ** i for i in range(N + 1)])
+        St = np.asarray([self.S * u ** (N - i) * d ** i for i in range(N + 1)])
 
         # call
-        if Option == "call":
-            C = np.where(St >= K, St - K, 0)
+        if option_type == "call":
+            C = np.where(St >= self.K, St - self.K, 0)
             while (len(C) > 1):
                 C = disc * (p * C[:-1] + q * C[1:])
                 St = St[:-1] * d
-                C = np.where(C > (St - K), C, St - K)
+                C = np.where(C > (St - self.K), C, St - self.K)
         # put
-        if Option == "put":
-            C = np.where(K >= St, K - St, 0)
+        if option_type == "put":
+            C = np.where(self.K >= St, self.K - St, 0)
             while (len(C) > 1):
                 C = disc * (p * C[:-1] + q * C[1:])
                 St = St[:-1] * d
-                C = np.where(C > (K - St), C, K - St)
+                C = np.where(C > (self.K - St), C, self.K - St)
         return C[0]
 
-    S = 100
-    K = 100
-    T = 1
-    r = 0.06
-    N = 3
-    u = 1.1
-    d = 1 / u
-    print(f'European Call: {Multipl_Binomial_Tree_European("call", K, T, S, r, N, u, d)}')
-    print(f'American Put: {Multipl_Binomial_Tree_American("put", K, T, S, r, N, u, d)}')
-    print(Multipl_Binomial_Tree_European("call", K, T, S, 0.05, 3, 1.1, 0.9))
 
     # mutators and accessors
     def set_S(self, S_):
@@ -140,3 +105,6 @@ if __name__ == "__main__":
     N = 3
     model = tree_model(S_,K_,T_,r_,sigma_)
     print(f"European call Binomial Multiplicative : {model.European_Binomial_Mutiplicative('call', N, u, 1 / u)}")
+    print(f"European put Binomial Multiplicative : {model.European_Binomial_Mutiplicative('put', N, u, 1 / u)}")
+    print(f"American call Binomial Multiplicative : {model.American_Binomial_Multiplicative('call', N, u, 1 / u)}")
+    print(f"American put Binomial Multiplicative : {model.American_Binomial_Multiplicative('put', N, u, 1 / u)}")
