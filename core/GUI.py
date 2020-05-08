@@ -67,6 +67,7 @@ class CalculatorPage(object):
             #self.mc.grid(row=r+1, columnspan=2, sticky=E)
             Label(self.root, text='Use BS Model: ').grid(row=r, sticky=W)
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
+            Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r + 1)
         elif self.modelType=="Monte Carlo":
             self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate','num_of_path']
@@ -78,7 +79,7 @@ class CalculatorPage(object):
                 e.grid(row=r, column=1, columnspan=2, sticky=W+E)
                 self.elist.append(e)
                 r += 1
-            Button(self.root, text='Calculate',command = self.get_parameter_BS).grid(row=r)
+            Button(self.root, text='Calculate',command = self.get_parameter_MC).grid(row=r)
             r += 1
             self.answ = Label(self.root, text='The result is as follows:')
             self.answ.grid(row=r, columnspan=3)
@@ -89,6 +90,7 @@ class CalculatorPage(object):
             #self.mc.grid(row=r+1, columnspan=2, sticky=E)
             Label(self.root, text='Use Monte Carlo: ').grid(row=r, sticky=W)
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
+            Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+1)
 
     def get_parameter_BS(self):
         vlist = []
@@ -118,8 +120,11 @@ class CalculatorPage(object):
         optionPrice = vlist[0] + vlist[1] + vlist[2] + vlist[3] + vlist[4]
         print(optionPrice)
         self.answ.config(text='The result is as follows:', fg='black')
-        self.bs.config(text=str("%.8f" % (optionPrice/10)))
+        self.MC.config(text=str("%.8f" % (optionPrice/10)))
         #self.mc.config(text=str("%.8f" % (optionPrice*10)))
+    def go_startPage(self):
+        self.root.destroy()
+        StartPage()
 
 
 if __name__ == '__main__':
