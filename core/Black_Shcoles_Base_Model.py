@@ -26,6 +26,7 @@ class BSBaseModel(object):
     def get_Option_Price(self):
         pass
 
+
     @abc.abstractmethod
     def get_delta(self):
         pass
