@@ -13,7 +13,7 @@ class StartPage(object):
         Label(self.root, text='by Yifu,Junjian and Junyi, MQF @RBS').pack()
         comvalue = StringVar()  # initialize the value
         self.comboxlist = ttk.Combobox(self.root, textvariable=comvalue)  # initialize
-        self.comboxlist["values"] = ("Black Scholes Model", "Monte Carlo", "Binary tree", "Trigeminal tree")
+        self.comboxlist["values"] = ("Black Scholes Model", "Monte Carlo", "Binomial tree", "Trinomial tree")
         #self.comboxlist.grid(column=1, row=6)
         self.comboxlist.current(0)  # select the first one to show
         self.comboxlist.pack()
@@ -24,6 +24,7 @@ class StartPage(object):
         self.comboxlist2.current(0)  # select the first one to show
         self.comboxlist2.pack()
         Button(self.root, text="Parameters Setting", command=self.go_calculator).pack()
+        self.root.resizable(0, 0)
         self.root.mainloop()
     def go_calculator(self):
         modelType=self.comboxlist.get()
@@ -70,6 +71,7 @@ class CalculatorPage(object):
             Label(self.root, text='European Option: ').grid(row=r, sticky=W)
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r + 1)
+            self.root.resizable(0, 0)
             #Button(self.root, text='Go Back', command=self.go_startPage).pack()
         elif self.modelType=="Monte Carlo":
             self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
@@ -94,7 +96,8 @@ class CalculatorPage(object):
             Label(self.root, text='Use Monte Carlo: ').grid(row=r, sticky=W)
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+1)
-        elif self.modelType=="Binary tree":
+            self.root.resizable(0, 0)
+        elif self.modelType=="Binomial tree":
             self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility','Number_of_step']
             self.elist = [] # for parameters
@@ -118,7 +121,8 @@ class CalculatorPage(object):
             Label(self.root, text='European Option : ').grid(row=r, sticky=W)
             Label(self.root, text='American Option : ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+2)
-        elif self.modelType=="Trigeminal tree":
+            self.root.resizable(0, 0)
+        elif self.modelType=="Trinomial tree":
             self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility','Number_of_step']
             self.elist = [] # for parameters
@@ -142,6 +146,7 @@ class CalculatorPage(object):
             Label(self.root, text='European Option : ').grid(row=r, sticky=W)
             Label(self.root, text='American Option : ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+2)
+            self.root.resizable(0, 0)
 
     def get_parameter_BS(self):
         vlist = []
