@@ -14,13 +14,11 @@ class StartPage(object):
         comvalue = StringVar()  # initialize the value
         self.comboxlist = ttk.Combobox(self.root, textvariable=comvalue)  # initialize
         self.comboxlist["values"] = ("Black Scholes Model", "Monte Carlo", "Binomial tree", "Trinomial tree")
-        #self.comboxlist.grid(column=1, row=6)
         self.comboxlist.current(0)  # select the first one to show
         self.comboxlist.pack()
         comvalue2 = StringVar()
         self.comboxlist2 = ttk.Combobox(self.root, textvariable=comvalue2)  # initialize
         self.comboxlist2["values"] = ("Call Option","Put Option")
-        #self.comboxlist2.grid(column=1, row=7)
         self.comboxlist2.current(0)  # select the first one to show
         self.comboxlist2.pack()
         Button(self.root, text="Parameters Setting", command=self.go_calculator).pack()
@@ -46,8 +44,6 @@ class CalculatorPage(object):
         Label(self.root, text='by Yifu,Junyi and Junjian MQF @RBS').grid(columnspan=3)
         self.cp = self.optionType
         Label(self.root, text='Input parameters').grid(row=4, column=0, sticky=W)
-        # Radiobutton(self.root, text='Call', variable=self.cp, value='c').grid(row=2, column=1)
-        # Radiobutton(self.root, text='Put', variable=self.cp, value='p').grid(row=2, column=2)
         if self.modelType=="Black Scholes Model":
             self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate']
@@ -65,14 +61,14 @@ class CalculatorPage(object):
             self.answ.grid(row=r, columnspan=3)
             r += 1
             self.BS = Label(self.root)
-            #self.mc = Label(self.root)
+
             self.BS.grid(row=r, columnspan=2, sticky=E)
-            #self.mc.grid(row=r+1, columnspan=2, sticky=E)
+
             Label(self.root, text='European Option: ').grid(row=r, sticky=W)
-            #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
+
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r + 1)
             self.root.resizable(0, 0)
-            #Button(self.root, text='Go Back', command=self.go_startPage).pack()
+
         elif self.modelType=="Monte Carlo":
             self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate','num_of_path']
@@ -90,11 +86,8 @@ class CalculatorPage(object):
             self.answ.grid(row=r, columnspan=3)
             r += 1
             self.MC = Label(self.root)
-            #self.mc = Label(self.root)
             self.MC.grid(row=r, columnspan=2, sticky=E)
-            #self.mc.grid(row=r+1, columnspan=2, sticky=E)
             Label(self.root, text='Use Monte Carlo: ').grid(row=r, sticky=W)
-            #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+1)
             self.root.resizable(0, 0)
         elif self.modelType=="Binomial tree":
@@ -115,7 +108,6 @@ class CalculatorPage(object):
             r += 1
             self.EU = Label(self.root)
             self.AM = Label(self.root)
-            #self.mc = Label(self.root)
             self.EU.grid(row=r, columnspan=2, sticky=E)
             self.AM.grid(row=r+1, columnspan=2, sticky=E)
             Label(self.root, text='European Option : ').grid(row=r, sticky=W)
@@ -166,7 +158,6 @@ class CalculatorPage(object):
         else:
             option = European_Put_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4])
             self.BS.config(text=str("%.8f" % (option.get_Option_Price())))
-        #self.mc.config(text=str("%.8f" % (optionPrice*10)))
     def get_parameter_MC(self):
         vlist = []
         for e in self.elist:
