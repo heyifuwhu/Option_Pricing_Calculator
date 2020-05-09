@@ -1,8 +1,9 @@
 import tkinter
-from tkinter import *git
+from tkinter import *
 from tkinter import ttk
 from core.Tree_Model_Base import tree_model
 from core.Black_Schcoles_Models_concrete import *
+from core.MonteCarlo import *
 class StartPage(object):
     def __init__(self):
         self.root=Tk()
@@ -47,7 +48,7 @@ class CalculatorPage(object):
         # Radiobutton(self.root, text='Call', variable=self.cp, value='c').grid(row=2, column=1)
         # Radiobutton(self.root, text='Put', variable=self.cp, value='p').grid(row=2, column=2)
         if self.modelType=="Black Scholes Model":
-            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -71,7 +72,7 @@ class CalculatorPage(object):
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r + 1)
             #Button(self.root, text='Go Back', command=self.go_startPage).pack()
         elif self.modelType=="Monte Carlo":
-            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate','num_of_path']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -94,7 +95,7 @@ class CalculatorPage(object):
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+1)
         elif self.modelType=="Binary tree":
-            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility','Number_of_step']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -118,7 +119,7 @@ class CalculatorPage(object):
             Label(self.root, text='American Option : ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+2)
         elif self.modelType=="Trigeminal tree":
-            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility','Number_of_step']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -173,8 +174,15 @@ class CalculatorPage(object):
                 return 0
         optionPrice = vlist[0] + vlist[1] + vlist[2] + vlist[3] + vlist[4]
         self.answ.config(text='The result is as follows:', fg='black')
-        self.MC.config(text=str("%.8f" % (optionPrice/10)))
-        #self.mc.config(text=str("%.8f" % (optionPrice*10)))
+        if self.optionType=="Call Option":
+            European_call = Pay_Off_Vanilla.European_Pay_Off("call", int(vlist[1]))
+            optionPrice = MonteCarlo(European_call, vlist[0], vlist[2], vlist[3], vlist[4]).get_MonteCarlo_Price(int(vlist[6]))
+            self.MC.config(text=str("%.8f" % (optionPrice)))
+
+        else:
+            European_put = Pay_Off_Vanilla.European_Pay_Off("put", int(vlist[1]))
+            optionPrice = MonteCarlo(European_put, vlist[1], vlist[2], vlist[3], vlist[4]).get_MonteCarlo_Price(int(vlist[6]))
+            self.MC.config(text=str("%.8f" % (optionPrice)))
     def get_parameter_BT(self):
         vlist = []
         for e in self.elist:
