@@ -96,7 +96,8 @@ class BSBaseModel(object):
 #     if Option_type == "call":
 #         return S * np.exp(-div * T) * norm.cdf(d1) - K*np.exp(-r*T)*norm.cdf(d2)
 #     elif Option_type == "put":
-        return K*np.exp(-r*T)*norm.cdf(-d2) - S * np.exp(-div * T)*norm.cdf(-d1)
+#         return K*np.exp(-r*T)*norm.cdf(-d2) - S * np.exp(-div * T)*norm.cdf(-d1)
+
 if __name__ == "__main__":
 
     K=100
