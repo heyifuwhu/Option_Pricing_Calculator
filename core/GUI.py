@@ -1,8 +1,9 @@
 import tkinter
-from tkinter import *git
+from tkinter import *
 from tkinter import ttk
 from core.Tree_Model_Base import tree_model
 from core.Black_Schcoles_Models_concrete import *
+from core.MonteCarlo import *
 class StartPage(object):
     def __init__(self):
         self.root=Tk()
@@ -47,7 +48,7 @@ class CalculatorPage(object):
         # Radiobutton(self.root, text='Call', variable=self.cp, value='c').grid(row=2, column=1)
         # Radiobutton(self.root, text='Put', variable=self.cp, value='p').grid(row=2, column=2)
         if self.modelType=="Black Scholes Model":
-            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -71,7 +72,7 @@ class CalculatorPage(object):
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r + 1)
             #Button(self.root, text='Go Back', command=self.go_startPage).pack()
         elif self.modelType=="Monte Carlo":
-            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate','num_of_path']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -94,7 +95,7 @@ class CalculatorPage(object):
             #Label(self.root, text='Use Monte Carlo: ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+1)
         elif self.modelType=="Binary tree":
-            self.plist = ['Current Price', 'Strike Price', 'Days to Maturity',
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility','Number_of_step']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -117,7 +118,30 @@ class CalculatorPage(object):
             Label(self.root, text='European Option : ').grid(row=r, sticky=W)
             Label(self.root, text='American Option : ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+2)
-
+        elif self.modelType=="Trigeminal tree":
+            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
+                     'Risk-free Rate', 'Volatility','Number_of_step']
+            self.elist = [] # for parameters
+            r = 5 # r start from 0 and now is 3
+            for param in self.plist:
+                Label(self.root, text=param).grid(column=0, sticky=W)
+                e = Entry(self.root)
+                e.grid(row=r, column=1, columnspan=2, sticky=W+E)
+                self.elist.append(e)
+                r += 1
+            Button(self.root, text='Calculate',command = self.get_parameter_TT).grid(row=r)
+            r += 1
+            self.answ = Label(self.root, text='The result is as follows:')
+            self.answ.grid(row=r, columnspan=3)
+            r += 1
+            self.EU = Label(self.root)
+            self.AM = Label(self.root)
+            #self.mc = Label(self.root)
+            self.EU.grid(row=r, columnspan=2, sticky=E)
+            self.AM.grid(row=r+1, columnspan=2, sticky=E)
+            Label(self.root, text='European Option : ').grid(row=r, sticky=W)
+            Label(self.root, text='American Option : ').grid(row=r+1, sticky=W)
+            Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+2)
 
     def get_parameter_BS(self):
         vlist = []
@@ -150,8 +174,15 @@ class CalculatorPage(object):
                 return 0
         optionPrice = vlist[0] + vlist[1] + vlist[2] + vlist[3] + vlist[4]
         self.answ.config(text='The result is as follows:', fg='black')
-        self.MC.config(text=str("%.8f" % (optionPrice/10)))
-        #self.mc.config(text=str("%.8f" % (optionPrice*10)))
+        if self.optionType=="Call Option":
+            European_call = Pay_Off_Vanilla.European_Pay_Off("call", int(vlist[1]))
+            optionPrice = MonteCarlo(European_call, vlist[0], vlist[2], vlist[3], vlist[4]).get_MonteCarlo_Price(int(vlist[6]))
+            self.MC.config(text=str("%.8f" % (optionPrice)))
+
+        else:
+            European_put = Pay_Off_Vanilla.European_Pay_Off("put", int(vlist[1]))
+            optionPrice = MonteCarlo(European_put, vlist[1], vlist[2], vlist[3], vlist[4]).get_MonteCarlo_Price(int(vlist[6]))
+            self.MC.config(text=str("%.8f" % (optionPrice)))
     def get_parameter_BT(self):
         vlist = []
         for e in self.elist:
@@ -170,6 +201,24 @@ class CalculatorPage(object):
         else:
             self.EU.config(text=str("%.8f" % (option.European_Binomial_Multiplicative('put', int(vlist[5]), 1.1, 1 / 1.1))))
             self.AM.config(text=str("%.8f" % (option.American_Binomial_Multiplicative('put', int(vlist[5]), 1.1, 1 / 1.1))))
+    def get_parameter_TT(self):
+        vlist = []
+        for e in self.elist:
+            try:
+                p = float(e.get())
+                vlist.append(p)
+            except:
+                answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
+                e.delete(0, len(e.get()))
+                return 0
+        option=tree_model(vlist[0],vlist[1],vlist[2],vlist[3],vlist[4])
+        self.answ.config(text='The result is as follows:', fg='black')
+        if self.optionType=="Call Option":
+            self.EU.config(text=str("%.8f" % (option.European_Trinomial('call', int(vlist[5]), 0.2))))
+            self.AM.config(text=str("%.8f" % (option.American_Trinomial('call', int(vlist[5]), 0.2))))
+        else:
+            self.EU.config(text=str("%.8f" % (option.European_Trinomial('put', int(vlist[5]), 0.2))))
+            self.AM.config(text=str("%.8f" % (option.American_Trinomial('put', int(vlist[5]), 0.2))))
     def go_startPage(self):
         self.root.destroy()
         StartPage()

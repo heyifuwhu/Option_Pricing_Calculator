@@ -21,7 +21,7 @@ class tree_model(object):
         self.sigma = sigma_
         self.div = div_
 
-    def European_Binomial_Mutiplicative(self, option_type, N, u, d):
+    def European_Binomial_Multiplicative(self, option_type, N, u, d):
         """
 
         :param str - option_type: option type "call" or "put"
