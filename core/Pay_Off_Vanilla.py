@@ -11,5 +11,5 @@ class European_Pay_Off(Pay_Off_Base.PayOffBaseClass):
         if self.option_type_ == "call":
             return np.maximum(S - self.Strike, 0)
         if self.option_type_ == "put":
-            return np.(self.Strike - S, 0)
+            return np.maximum(self.Strike - S, 0)
 
