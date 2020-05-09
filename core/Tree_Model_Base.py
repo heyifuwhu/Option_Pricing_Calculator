@@ -268,3 +268,4 @@ if __name__ == "__main__":
     print(f"European put Trinomial : {model.European_Trinomial('put', N, dx)}")
     print(f"American call Trinomial : {model.American_Trinomial('call', N, dx)}")
     print(f"American put Trinomial : {model.American_Trinomial('put', N, dx)}")
+    # test
