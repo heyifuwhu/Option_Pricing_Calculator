@@ -1,6 +1,6 @@
 import abc
 
-class PayOffBase(object):
+class PayOffBaseClass(object):
     def __init__(self):
         pass
 
