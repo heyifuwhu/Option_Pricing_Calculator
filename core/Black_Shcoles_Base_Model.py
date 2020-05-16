@@ -14,19 +14,19 @@ class BSBaseModel(object):
         sigma : Volatility
         div : dividend rate
     """
-    def __init__(self, S_, K_, T_, r_, sigma_, div_=0):
-        self.S = S_
-        self.K = K_
-        self.T = T_
-        self.r = r_
-        self.sigma = sigma_
-        self.div = div_
+    def __init__(self, S, K, T, r, sigma, div=0):
+        self.S = S
+        self.K = K
+        self.T = T
+        self.r = r
+        self.sigma = sigma
+        self.div = div
 
     @abc.abstractmethod
     def get_Option_Price(self):
         pass
 
-
+    # calculate greek letters
     @abc.abstractmethod
     def get_delta(self):
         pass
@@ -47,19 +47,24 @@ class BSBaseModel(object):
     def get_vega(self):
         pass
 
+    # calculate greek letters with numerical method
     @abc.abstractmethod
     def get_delta_numerical(self):
         pass
 
+    @abc.abstractmethod
     def get_gamma_numerical(self):
         pass
 
+    @abc.abstractmethod
     def get_theta_numerical(self):
         pass
 
+    @abc.abstractmethod
     def get_rho_numerical(self):
         pass
 
+    @abc.abstractmethod
     def get_vega_numerical(self):
         pass
 
