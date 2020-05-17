@@ -9,7 +9,7 @@ class European_Call_BS(Black_Shcoles_Base_Model.BSBaseModel):
     Attributes:
         S: float - Spot Price
         K: float - Strike Price
-        T : float - Time to Maturity
+        tao : float - Time to Maturity
         r: float - risk-free rate(TBD)
         sigma : float - Volatility
         div : float - dividend rate
@@ -17,18 +17,18 @@ class European_Call_BS(Black_Shcoles_Base_Model.BSBaseModel):
         d2: float
     """
 
-    def __init__(self, S, K, T, r, sigma, div=0):
+    def __init__(self, S, K, tao, r, sigma, div=0):
         """
         Constructor:
         Args:
             S: float - Spot Price
             K: float - Strike Price
-            T : float - Time to Maturity
+            tao : float - Time to Maturity
             r: float - risk-free rate(TBD)
             sigma : float - Volatility
             div : float - dividend rate
         """
-        super().__init__(S, K, T, r, sigma, div)
+        super().__init__(S, K, tao, r, sigma, div)
 
     def get_Option_Price(self):
         """
@@ -37,8 +37,8 @@ class European_Call_BS(Black_Shcoles_Base_Model.BSBaseModel):
         Returns:
             call_price: float
         """
-        call_price = (self.S * np.exp(-self.div * self.T) * stats.norm.cdf(self.d1,0,1) - self.K * np.exp(
-            -self.r * self.T) * stats.norm.cdf(self.d2, 0, 1))
+        call_price = (self.S * np.exp(-self.div * self.tao) * stats.norm.cdf(self.d1, 0, 1) - self.K * np.exp(
+            -self.r * self.tao) * stats.norm.cdf(self.d2, 0, 1))
         return call_price
 
     def get_delta(self):
@@ -48,74 +48,71 @@ class European_Call_BS(Black_Shcoles_Base_Model.BSBaseModel):
         Returns:
             delta: float
         """
-        delta = np.exp(-self.div * self.T) * stats.norm.cdf(self.d1, 0, 1)
+        delta = np.exp(-self.div * self.tao) * stats.norm.cdf(self.d1, 0, 1)
         return delta
 
     def get_gamma(self):
         """
         Public Method:
             (Call) get gamma, the second derivatives of spot price to option price
+            It contains two formulas to calculate gamma, which are the same.
         Returns:
             gamma: float
         """
-        gamma = np.exp(-self.div * self.T) * stats.norm.cdf(self.d1, 0, 1) / self.S * self.sigma * np.sqrt(self.T)
+        # formula 1
+        gamma = np.exp(-self.div * self.tao) * stats.norm.pdf(self.d1) / (self.S * self.sigma * np.sqrt(self.tao))
+
+        # formula 2
+        # gamma = self.K * np.exp(-self.tao * self.r) * stats.norm.pdf(self.d2) / (
+        #         self.S ** 2 * self.sigma * np.sqrt(self.tao))
+
         return gamma
+
+
 
     def get_theta(self):
         """
         Public Method:
-            (Call) get theta, the second derivatives of T(time to maturity) to option price
+            (Call) get theta, the first derivatives of T(time to maturity) to option price
         Returns:
             theta: float
         """
-        theta = -np.exp(-self.div * self.T) * self.S * stats.norm.cdf(self.d1, 0, 1) * self.sigma / (
-                    2 * np.sqrt(self.T)) - self.r * self.K * np.exp(-self.r * self.T) * stats.norm.cdf(self.d2, 0,
-                                                                                                       1) + self.div * self.S * np.exp(
-            -self.div * self.T) * stats.norm.cdf(self.d1, 0, 1)
-        print(theta)
-        theta = -(self.S * stats.norm.cdf(self.d1, 0, 1) * self.sigma) / (
-                    2 * np.sqrt(self.T)) - self.r * self.K * np.exp(-self.r * self.T) * stats.norm.cdf(self.d2, 0, 1)
-        print(theta)
+        theta = -np.exp(-self.div * self.tao) * self.S * stats.norm.pdf(self.d1) * self.sigma / (
+                2 * np.sqrt(self.tao)) - self.r * self.K * np.exp(-self.r * self.tao) * stats.norm.cdf(
+            self.d2) + self.div * self.S * np.exp(
+            -self.div * self.tao) * stats.norm.cdf(self.d1)
         return theta
 
     def get_rho(self):
         """
         Public Method:
-            (Call) get theta, the second derivatives of r(interest rate) to option price
+            (Call) get tho, the first derivatives of r(interest rate) to option price
         Returns:
             rho: float
         """
-        rho = self.K * self.T * np.exp(-self.r * self.T) * stats.norm.cdf(self.d2, 0, 1)
+        rho = self.K * self.tao * np.exp(-self.r * self.tao) * stats.norm.cdf(self.d2)
         return rho
 
 
     def get_vega(self):
         """
         Public Method:
-            (Call) get vega, the second derivatives of sigma(volatility) to option price
+            (Call) get vega, the first derivatives of sigma(volatility) to option price.
+            It contains three formulas to calculate vega, which are the same.
         Returns:
             vega: float
         """
-        vega = 1 / np.sqrt(2 * np.pi) * self.S * np.exp(-self.div * self.T) * np.exp(-self.d1 ** 2 * 0.5) * np.sqrt(
-            self.T)
+        # formula 1
+        # vega = 1 / np.sqrt(2 * np.pi) * self.S * np.exp(-self.div * self.tao) * np.exp(-self.d1 ** 2 * 0.5) * np.sqrt(
+        #     self.tao)
+
+        # formula 2
+        vega = self.S * np.exp(-self.div * self.tao) * stats.norm.pdf(self.d1) * np.sqrt(self.tao)
+
+        # formula 3
+        # vega = self.K * np.exp(-self.r * self.tao) * stats.norm.pdf(self.d2) * np.sqrt(self.tao)
+
         return vega
-
-
-    def get_gamma_numerical(self, dx=0.0001):
-        price1=price=((self.S+0.0001) * np.exp(-self.div * self.T) * stats.norm.cdf(self.d1, 0, 1) - self.K * np.exp(
-            -self.r * self.T) * stats.norm.cdf(self.d2, 0, 1))
-        delta1= self.get_delta_numerical()
-        price2=((self.S+0.0002) * np.exp(-self.div * self.T) * stats.norm.cdf(self.d1, 0, 1) - self.K * np.exp(
-            -self.r * self.T) * stats.norm.cdf(self.d2, 0, 1))
-        delta2=(price2-price1)/0.0001
-        gamma=(delta2-delta1)/0.0001
-        return gamma
-
-
-
-
-
-
 
 
 class European_Put_BS(Black_Shcoles_Base_Model.BSBaseModel):
@@ -125,25 +122,25 @@ class European_Put_BS(Black_Shcoles_Base_Model.BSBaseModel):
     Attributes:
         S: float - Spot Price
         K: float - Strike Price
-        T : float - Time to Maturity
+        tao : float - Time to Maturity
         r: float - risk-free rate(TBD)
         sigma : float - Volatility
         div : float - dividend rate
         d1: float
         d2: float
     """
-    def __init__(self, S, K, T, r, sigma, div=0):
+    def __init__(self, S, K, tao, r, sigma, div=0):
         """
         Constructor:
         Args:
             S: float - Spot Price
             K: float - Strike Price
-            T : float - Time to Maturity
+            tao : float - Time to Maturity
             r: float - risk-free rate(TBD)
             sigma : float - Volatility
             div : float - dividend rate
         """
-        super().__init__(S, K, T, r, sigma, div)
+        super().__init__(S, K, tao, r, sigma, div)
 
     def get_Option_Price(self):
         """
@@ -152,85 +149,80 @@ class European_Put_BS(Black_Shcoles_Base_Model.BSBaseModel):
         Returns:
             put_price: float
         """
-        put_price = (self.K * np.exp(-self.r * self.T) * stats.norm.cdf(-self.d2, 0, 1) - self.S * np.exp(
-                     -self.div * self.T) * stats.norm.cdf(-self.d1, 0, 1))
+        put_price = (self.K * np.exp(-self.r * self.tao) * stats.norm.cdf(-self.d2, 0, 1) - self.S * np.exp(
+                     -self.div * self.tao) * stats.norm.cdf(-self.d1, 0, 1))
         return put_price
 
     def get_delta(self):
         """
         Public Method:
-            (Put) get delta, the first derivatives of spot price to option price
+            (Put) get delta, the first derivatives of spot price to option price.
         Returns:
             delta: float
         """
-        # delta = np.exp(-self.div * self.T) * stats.norm.cdf(self.d1 - 1, 0, 1)
-        delta = -np.exp(-self.div * self.T) * stats.norm.cdf(-self.d1, 0, 1)
+        # delta = np.exp(-self.div * self.tao) * stats.norm.cdf(self.d1 - 1)
+        delta = -np.exp(-self.div * self.tao) * stats.norm.cdf(-self.d1)
         return delta
 
     def get_gamma(self):
         """
         Public Method:
-            (Put) get gamma, the second derivatives of spot price to option price
+            (Put) get gamma, the second derivatives of spot price to option price.
+            It contains two formulas to calculate gamma, which are the same.
         Returns:
             gamma: float
         """
-        gamma = np.exp(-self.div * self.T) * stats.norm.cdf(self.d1, 0, 1) / self.S * self.sigma * np.sqrt(self.T)
+        # formula 1
+        gamma = np.exp(-self.div * self.tao) * stats.norm.pdf(self.d1) / (self.S * self.sigma * np.sqrt(self.tao))
+
+        # formula 2
+        # gamma = self.K * np.exp(-self.tao * self.r) * stats.norm.pdf(self.d2) / (
+        #         self.S ** 2 * self.sigma * np.sqrt(self.tao))
+
         return gamma
 
     def get_theta(self):
         """
         Public Method:
-            (Put) get theta, the second derivatives of T(time to maturity) to option price
+            (Put) get theta, the first derivatives of T(time to maturity) to option price
         Returns:
             theta: float
         """
-        theta = -np.exp(-self.div * self.T) * self.S * stats.norm.cdf(-self.d1, 0, 1) * self.sigma / (
-                    2 * np.sqrt(self.T)) + self.r * self.K * np.exp(-self.r * self.T) * stats.norm.cdf(-self.d2, 0,
-                                                                                                       1) - self.div * self.S * np.exp(
-            -self.div * self.T) * stats.norm.cdf(-self.d1, 0, 1)
-        print(theta)
-        theta = -(self.S * stats.norm.cdf(self.d1, 0, 1) * self.sigma) / (
-                    2 * np.sqrt(self.T)) + self.r * self.K * np.exp(-self.r * self.T) * stats.norm.cdf(-self.d2, 0, 1)
-        print(theta)
+        theta = -np.exp(-self.div * self.tao) * self.S * stats.norm.pdf(-self.d1) * self.sigma / (
+                2 * np.sqrt(self.tao)) + self.r * self.K * np.exp(-self.r * self.tao) * stats.norm.cdf(
+            -self.d2) - self.div * self.S * np.exp(
+            -self.div * self.tao) * stats.norm.cdf(-self.d1)
         return theta
 
     def get_rho(self):
         """
         Public Method:
-            (Put) get theta, the second derivatives of r(interest rate) to option price
+            (Put) get rho, the first derivatives of r(interest rate) to option price
         Returns:
             rho: float
         """
-        rho = -self.K * self.T * np.exp(-self.r * self.T) * stats.norm.cdf(-self.d2, 0, 1)
+        rho = -self.K * self.tao * np.exp(-self.r * self.tao) * stats.norm.cdf(-self.d2, 0, 1)
         return rho
 
     def get_vega(self):
         """
         Public Method:
-            (Put) get vega, the second derivatives of sigma(volatility) to option price
+            (Put) get vega, the first derivatives of sigma(volatility) to option price
+            It contains three formulas to calculate vega, which are the same.
         Returns:
             vega: float
         """
-        vega = 1 / np.sqrt(2 * np.pi) * self.S * np.exp(-self.div * self.T) * np.exp(-self.d1 ** 2 * 0.5) * np.sqrt(
-            self.T)
+        # formula 1
+        # vega = 1 / np.sqrt(2 * np.pi) * self.S * np.exp(-self.div * self.tao) * np.exp(-self.d1 ** 2 * 0.5) * np.sqrt(
+        #     self.tao)
+
+        # formula 2
+        vega = self.S * np.exp(-self.div * self.tao) * stats.norm.pdf(self.d1) * np.sqrt(self.tao)
+
+        # formula 3
+        # vega = self.K * np.exp(-self.r * self.tao) * stats.norm.pdf(self.d2) * np.sqrt(self.tao)
+
         return vega
-
-
-    def get_gamma_numerical(self, dx=0.0001):
-        price1=(self.K * np.exp(-self.r * self.T) * stats.norm.cdf(-self.d2, 0, 1) - (self.S+0.0001) * np.exp(
-                     -self.div * self.T) * stats.norm.cdf(-self.d1, 0, 1))
-        delta1= self.get_delta_numerical()
-        price2=(self.K * np.exp(-self.r * self.T) * stats.norm.cdf(-self.d2, 0, 1) - (self.S+0.0002) * np.exp(
-                     -self.div * self.T) * stats.norm.cdf(-self.d1, 0, 1))
-        delta2=(price2-price1)/0.0001
-        gamma=(delta2-delta1)/0.0001
-        return gamma
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -252,7 +244,7 @@ if __name__ == "__main__":
     r = 0
     sigma = 0.25
     div = 0
-    dx = 0.0001
+    dx = 0.000001
     call = European_Call_BS(S, K, T, r, sigma, div)
     put = European_Put_BS(S, K, T, r, sigma, div)
     print("call: ", call.get_Option_Price())
