@@ -6,11 +6,11 @@ from core.Black_Schcoles_Models_concrete import *
 from core.MonteCarlo import *
 class StartPage(object):
     def __init__(self):
-        self.root=Tk()
-        self.root.wm_title(' Option Price Calculator')
+        self.root = Tk()
+        self.root.wm_title('Option Price Calculator')
         Label(self.root, text='Please select the model and the Option type').pack()
         Label(self.root, text=',click "Continue"  to  parameters setting').pack()
-        Label(self.root, text='by Yifu,Junjian and Junyi, MQF @RBS').pack()
+        Label(self.root, text='Implemented by Yifu He,Junjian Yao and Junyi Yuan, MQF @RBS').pack()
         comvalue = StringVar()  # initialize the value
         self.comboxlist = ttk.Combobox(self.root, textvariable=comvalue)  # initialize
         self.comboxlist["values"] = ("Black Scholes Model", "Monte Carlo", "Binomial tree", "Trinomial tree")
@@ -21,12 +21,13 @@ class StartPage(object):
         self.comboxlist2["values"] = ("Call Option","Put Option")
         self.comboxlist2.current(0)  # select the first one to show
         self.comboxlist2.pack()
-        Button(self.root, text="Parameters Setting", command=self.go_calculator).pack()
+        Button(self.root, text="Continue", command=self.go_calculator).pack()
         self.root.resizable(0, 0)
         self.root.mainloop()
+
     def go_calculator(self):
-        modelType=self.comboxlist.get()
-        optionType=self.comboxlist2.get()
+        modelType = self.comboxlist.get()
+        optionType = self.comboxlist2.get()
         print(modelType,optionType)
         self.root.destroy()
         CalculatorPage(modelType,optionType)
@@ -41,7 +42,7 @@ class CalculatorPage(object):
         Label(self.root, text='Model type : '+self.modelType+'    Option type: '+self.optionType).grid(row=0, column=0, columnspan=3)
         Label(self.root, text='Please input relevant parameters, '
                          'then click "Calculate" button.').grid(row=1, column=0, columnspan=3)
-        Label(self.root, text='by Yifu,Junyi and Junjian MQF @RBS').grid(columnspan=3)
+        Label(self.root, text='Implemented by Yifu He,Junjian Yao and Junyi Yuan, MQF @RBS').grid(columnspan=3)
         self.cp = self.optionType
         Label(self.root, text='Input parameters').grid(row=4, column=0, sticky=W)
         if self.modelType=="Black Scholes Model":
