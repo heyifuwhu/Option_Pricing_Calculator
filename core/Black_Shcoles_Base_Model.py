@@ -214,7 +214,7 @@ class BSBaseModel(object):
     def set_sigma(self,  sigma_):
         self.sigma = sigma_
 
-    def sef_div(self,div_):
+    def sef_div(self, div_):
         self.div = div_
 
 
