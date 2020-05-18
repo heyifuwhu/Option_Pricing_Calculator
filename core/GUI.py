@@ -4,49 +4,62 @@ from tkinter import ttk
 from core.Tree_Model_Base import tree_model
 from core.Black_Schcoles_Models_concrete import *
 from core.MonteCarlo import *
+
+# the first page
 class StartPage(object):
     def __init__(self):
         self.root = Tk()
         self.root.wm_title('Option Price Calculator')
-        Label(self.root, text='Please select the model and the Option type').pack()
+        Label(self.root, text='Please select the model and the option type').pack()
         Label(self.root, text=',click "Continue"  to  parameters setting').pack()
-        Label(self.root, text='Implemented by Yifu He,Junjian Yao and Junyi Yuan, MQF @RBS').pack()
-        comvalue = StringVar()  # initialize the value
-        self.comboxlist = ttk.Combobox(self.root, textvariable=comvalue)  # initialize
+        Label(self.root, text='Implemented by Yifu He, Junjian Yao and Junyi Yuan, MQF @RBS').pack()
+
+        # initialize the value for models
+        model_comvalue = StringVar()
+        self.comboxlist = ttk.Combobox(self.root, textvariable=model_comvalue)  # initialize
         self.comboxlist["values"] = ("Black Scholes Model", "Monte Carlo", "Binomial tree", "Trinomial tree")
         self.comboxlist.current(0)  # select the first one to show
-        self.comboxlist.pack()
-        comvalue2 = StringVar()
-        self.comboxlist2 = ttk.Combobox(self.root, textvariable=comvalue2)  # initialize
+        self.comboxlist.pack()  # put the widget in the window
+
+        # initialize the value for option types
+        type_comvalue = StringVar()
+        self.comboxlist2 = ttk.Combobox(self.root, textvariable=type_comvalue)  # initialize
         self.comboxlist2["values"] = ("Call Option","Put Option")
         self.comboxlist2.current(0)  # select the first one to show
-        self.comboxlist2.pack()
+        self.comboxlist2.pack() # put the widget in the window
+
+        # Set a button to continue
         Button(self.root, text="Continue", command=self.go_calculator).pack()
-        self.root.resizable(0, 0)
+
+        self.root.resizable(height=False, width=False)
         self.root.mainloop()
 
+    # go to the calculation
     def go_calculator(self):
         modelType = self.comboxlist.get()
         optionType = self.comboxlist2.get()
-        print(modelType,optionType)
+        print(modelType, optionType)
         self.root.destroy()
-        CalculatorPage(modelType,optionType)
+        CalculatorPage(modelType, optionType)
 
+
+# the calculation page
 class CalculatorPage(object):
-    def __init__(self,modelType,optionType):
-        self.modelType=modelType
-        self.optionType=optionType
-        self.vlist=[]
-        self.root = Tk() # Create an object
-        self.root.wm_title(' Option Price Calculator')
-        Label(self.root, text='Model type : '+self.modelType+'    Option type: '+self.optionType).grid(row=0, column=0, columnspan=3)
-        Label(self.root, text='Please input relevant parameters, '
-                         'then click "Calculate" button.').grid(row=1, column=0, columnspan=3)
-        Label(self.root, text='Implemented by Yifu He,Junjian Yao and Junyi Yuan, MQF @RBS').grid(columnspan=3)
-        self.cp = self.optionType
-        Label(self.root, text='Input parameters').grid(row=4, column=0, sticky=W)
-        if self.modelType=="Black Scholes Model":
-            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
+    def __init__(self, modelType, optionType):
+        self.modelType = modelType
+        self.optionType = optionType
+        self.vlist = []
+
+        # Create an object
+        self.root = Tk()
+        self.root.wm_title('Option Price Calculator')
+        Label(self.root, text=f'Model type: {self.modelType}').grid(row=0, column=0, columnspan=3)
+        Label(self.root, text=f'Option type: {self.optionType}').grid(row=1, column=0, columnspan=3)
+        Label(self.root, text='Implemented by Yifu He, Junjian Yao and Junyi Yuan, MQF @RBS').grid(columnspan=4)
+        Label(self.root, text='Input parameters: ').grid(row=4, column=0, sticky=W)
+
+        if self.modelType == "Black Scholes Model":
+            self.plist = ['Spot Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -62,17 +75,38 @@ class CalculatorPage(object):
             self.answ.grid(row=r, columnspan=3)
             r += 1
             self.BS = Label(self.root)
+            self.delta = Label(self.root)
+            self.gamma = Label(self.root)
+            self.theta = Label(self.root)
+            self.rho = Label(self.root)
+            self.vega = Label(self.root)
 
             self.BS.grid(row=r, columnspan=2, sticky=E)
+            self.delta.grid(row=r + 1, columnspan=2, sticky=E)
+            self.gamma.grid(row=r + 2, columnspan=2, sticky=E)
+            self.theta.grid(row=r + 3, columnspan=2, sticky=E)
+            self.rho.grid(row=r + 4, columnspan=2, sticky=E)
+            self.vega.grid(row=r + 5, columnspan=2, sticky=E)
 
-            Label(self.root, text='European Option: ').grid(row=r, sticky=W)
+            Label(self.root, text=f'European {self.optionType}: ').grid(row=r, sticky=W)
+            r += 1
+            Label(self.root, text='delta: ').grid(row=r, sticky=W)
+            r += 1
+            Label(self.root, text='gamma: ').grid(row=r, sticky=W)
+            r += 1
+            Label(self.root, text='theta: ').grid(row=r, sticky=W)
+            r += 1
+            Label(self.root, text='rho: ').grid(row=r, sticky=W)
+            r += 1
+            Label(self.root, text='vega: ').grid(row=r, sticky=W)
+            r += 1
 
-            Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r + 1)
-            self.root.resizable(0, 0)
+            Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r)
+            self.root.resizable(height=False, width=False)
 
         elif self.modelType=="Monte Carlo":
-            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
-                     'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate','num_of_path']
+            self.plist = ['Spot Price', 'Strike Price', 'Time to Maturity',
+                          'Risk-free Rate', 'Volatility', 'Continuous Dividend Rate', 'num_of_path']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
             for param in self.plist:
@@ -90,9 +124,9 @@ class CalculatorPage(object):
             self.MC.grid(row=r, columnspan=2, sticky=E)
             Label(self.root, text='Use Monte Carlo: ').grid(row=r, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+1)
-            self.root.resizable(0, 0)
+            self.root.resizable(height=False, width=False)
         elif self.modelType=="Binomial tree":
-            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
+            self.plist = ['Spot Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility','Number_of_step']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -111,12 +145,12 @@ class CalculatorPage(object):
             self.AM = Label(self.root)
             self.EU.grid(row=r, columnspan=2, sticky=E)
             self.AM.grid(row=r+1, columnspan=2, sticky=E)
-            Label(self.root, text='European Option : ').grid(row=r, sticky=W)
-            Label(self.root, text='American Option : ').grid(row=r+1, sticky=W)
+            Label(self.root, text=f'European {self.optionType} : ').grid(row=r, sticky=W)
+            Label(self.root, text=f'American {self.optionType} : ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+2)
-            self.root.resizable(0, 0)
+            self.root.resizable(height=False, width=False)
         elif self.modelType=="Trinomial tree":
-            self.plist = ['Current Price', 'Strike Price', 'Time to Maturity',
+            self.plist = ['Spot Price', 'Strike Price', 'Time to Maturity',
                      'Risk-free Rate', 'Volatility','Number_of_step']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
@@ -136,10 +170,10 @@ class CalculatorPage(object):
             #self.mc = Label(self.root)
             self.EU.grid(row=r, columnspan=2, sticky=E)
             self.AM.grid(row=r+1, columnspan=2, sticky=E)
-            Label(self.root, text='European Option : ').grid(row=r, sticky=W)
-            Label(self.root, text='American Option : ').grid(row=r+1, sticky=W)
+            Label(self.root, text=f'European {self.optionType} : ').grid(row=r, sticky=W)
+            Label(self.root, text=f'American {self.optionType} : ').grid(row=r+1, sticky=W)
             Button(self.root, text='Go Back', command=self.go_startPage).grid(row=r+2)
-            self.root.resizable(0, 0)
+            self.root.resizable(height=False, width=False)
 
     def get_parameter_BS(self):
         vlist = []
@@ -148,17 +182,29 @@ class CalculatorPage(object):
                 p = float(e.get())
                 vlist.append(p)
             except:
-                answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
+                self.answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
                 e.delete(0, len(e.get()))
                 return 0
 
         self.answ.config(text='The result is as follows:', fg='black')
         if self.optionType=="Call Option":
-            option=European_Call_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4])
+            option = European_Call_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4])
             self.BS.config(text=str("%.8f" % (option.get_Option_Price())))
+            self.delta.config(text=str("%.8f" % (option.get_delta())))
+            self.gamma.config(text=str("%.8f" % (option.get_gamma())))
+            self.theta.config(text=str("%.8f" % (option.get_theta())))
+            self.rho.config(text=str("%.8f" % (option.get_rho())))
+            self.vega.config(text=str("%.8f" % (option.get_vega())))
         else:
             option = European_Put_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4])
             self.BS.config(text=str("%.8f" % (option.get_Option_Price())))
+            self.delta.config(text=str("%.8f" % (option.get_delta())))
+            self.gamma.config(text=str("%.8f" % (option.get_gamma())))
+            self.theta.config(text=str("%.8f" % (option.get_theta())))
+            self.rho.config(text=str("%.8f" % (option.get_rho())))
+            self.vega.config(text=str("%.8f" % (option.get_vega())))
+
+
     def get_parameter_MC(self):
         vlist = []
         for e in self.elist:
@@ -166,7 +212,7 @@ class CalculatorPage(object):
                 p = float(e.get())
                 vlist.append(p)
             except:
-                answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
+                self.answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
                 e.delete(0, len(e.get()))
                 return 0
         optionPrice = vlist[0] + vlist[1] + vlist[2] + vlist[3] + vlist[4]
@@ -187,7 +233,7 @@ class CalculatorPage(object):
                 p = float(e.get())
                 vlist.append(p)
             except:
-                answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
+                self.answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
                 e.delete(0, len(e.get()))
                 return 0
         option=tree_model(vlist[0],vlist[1],vlist[2],vlist[3],vlist[4])
@@ -205,7 +251,7 @@ class CalculatorPage(object):
                 p = float(e.get())
                 vlist.append(p)
             except:
-                answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
+                self.answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
                 e.delete(0, len(e.get()))
                 return 0
         option=tree_model(vlist[0],vlist[1],vlist[2],vlist[3],vlist[4])
