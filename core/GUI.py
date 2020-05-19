@@ -127,7 +127,7 @@ class CalculatorPage(object):
             self.root.resizable(height=False, width=False)
         elif self.modelType=="Binomial tree":
             self.plist = ['Spot Price', 'Strike Price', 'Time to Maturity',
-                     'Risk-free Rate', 'Volatility','Number_of_step']
+                     'Risk-free Rate', 'Volatility','Continuous Dividend Rate','Number_of_step']
             self.elist = [] # for parameters
             r = 5 # r start from 0 and now is 3
             for param in self.plist:
@@ -188,7 +188,7 @@ class CalculatorPage(object):
 
         self.answ.config(text='The result is as follows:', fg='black')
         if self.optionType=="Call Option":
-            option = European_Call_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4])
+            option = European_Call_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4], vlist[5])
             self.BS.config(text=str("%.8f" % (option.get_Option_Price())))
             self.delta.config(text=str("%.8f" % (option.get_delta())))
             self.gamma.config(text=str("%.8f" % (option.get_gamma())))
@@ -196,7 +196,7 @@ class CalculatorPage(object):
             self.rho.config(text=str("%.8f" % (option.get_rho())))
             self.vega.config(text=str("%.8f" % (option.get_vega())))
         else:
-            option = European_Put_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4])
+            option = European_Put_BS(vlist[0], vlist[1], vlist[2], vlist[3], vlist[4], vlist[5])
             self.BS.config(text=str("%.8f" % (option.get_Option_Price())))
             self.delta.config(text=str("%.8f" % (option.get_delta())))
             self.gamma.config(text=str("%.8f" % (option.get_gamma())))
@@ -236,14 +236,14 @@ class CalculatorPage(object):
                 self.answ.config(text='Invalid Input(s). Please input correct parameter(s)', fg='red')
                 e.delete(0, len(e.get()))
                 return 0
-        option=tree_model(vlist[0],vlist[1],vlist[2],vlist[3],vlist[4])
+        option=tree_model(vlist[0],vlist[1],vlist[2],vlist[3],vlist[4],vlist[5])
         self.answ.config(text='The result is as follows:', fg='black')
         if self.optionType=="Call Option":
-            self.EU.config(text=str("%.8f" % (option.European_Binomial_Multiplicative('call', int(vlist[5]), 1.1, 1 / 1.1))))
-            self.AM.config(text=str("%.8f" % (option.American_Binomial_Multiplicative('call', int(vlist[5]), 1.1, 1 / 1.1))))
+            self.EU.config(text=str("%.8f" % (option.European_Binomial_Multiplicative('call', int(vlist[6])))))
+            self.AM.config(text=str("%.8f" % (option.American_Binomial_Multiplicative('call', int(vlist[6])))))
         else:
-            self.EU.config(text=str("%.8f" % (option.European_Binomial_Multiplicative('put', int(vlist[5]), 1.1, 1 / 1.1))))
-            self.AM.config(text=str("%.8f" % (option.American_Binomial_Multiplicative('put', int(vlist[5]), 1.1, 1 / 1.1))))
+            self.EU.config(text=str("%.8f" % (option.European_Binomial_Multiplicative('put', int(vlist[6])))))
+            self.AM.config(text=str("%.8f" % (option.American_Binomial_Multiplicative('put', int(vlist[6])))))
     def get_parameter_TT(self):
         vlist = []
         for e in self.elist:

@@ -243,7 +243,7 @@ if __name__ == "__main__":
     T = 0.25
     r = 0
     sigma = 0.25
-    div = 0
+    div = 0.1
     dx = 0.000001
     call = European_Call_BS(S, K, T, r, sigma, div)
     put = European_Put_BS(S, K, T, r, sigma, div)

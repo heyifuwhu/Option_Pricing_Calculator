@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class tree_model(object):
     """
     Summary of Binomial Tree Model:
@@ -13,26 +14,52 @@ class tree_model(object):
         div : dividend rate
     """
 
-    def __init__(self, S_: float, K_: float, T_: float, r_: float, sigma_: float, div_: float = 0):
-        self.S = S_
-        self.K = K_
-        self.T = T_
-        self.r = r_
-        self.sigma = sigma_
-        self.div = div_
-
-    def European_Binomial_Multiplicative(self, option_type, N, u, d):
+    def __init__(self, S: float, K: float, T: float, r: float, sigma: float, div: float = 0):
         """
+        Constructor:
 
-        :param str - option_type: option type "call" or "put"
-        :param int - N: number of step
-        :return: float - option price
+        Args:
+            S: float - Spot Price
+            K: float - Strike Price
+            T: float - Time to Maturity
+            r: float - risk-free rate
+            sigma: float - Volatility
+            div: float - dividend rate
+        """
+        self.S = S
+        self.K = K
+        self.T = T
+        self.r = r
+        self.sigma = sigma
+        self.div = div
+
+    def European_Binomial_Multiplicative(self, option_type, N):
+        """
+        Public Method:
+            European Multiplicative Binomial Tree Model
+            dt = delta t
+            u = upward factor
+            d = downward factor
+            p = probability to go upwards
+            q = probability to go downwards
+        References:
+            Cox, Ross, and Rubinstein (1979)
+            http://static.stevereads.com/papers_to_read/option_pricing_a_simplified_approach.pdf
+        Args:
+            option_type: str - option type "call" or "put"
+            N: int - N: number of step
+
+        Returns:
+            option price: float
+
         """
         # record value
         dt = self.T / N
-        p = (np.exp(self.r * dt) - d) / (u - d)
+        d = np.exp( - self.sigma * np.sqrt(dt))
+        u = 1 / d
+        p = (np.exp((self.r - self.div) * dt) - d) / (u - d)
         q = 1 - p
-        disc = np.exp(-self.r * dt)
+        disc = np.exp(-(self.r - self.div) * dt)
 
         # initialize underlying asset price
         St = np.asarray([self.S * u ** (N - i) * d ** i for i in range(N + 1)])
@@ -49,18 +76,31 @@ class tree_model(object):
                 C = disc * (p * C[:-1] + q * C[1:])
         return C[0]
 
-    def American_Binomial_Multiplicative(self, option_type, N, u, d):
+    def American_Binomial_Multiplicative(self, option_type, N):
         """
+        Public Method:
+            American
+             Multiplicative Binomial Tree Model
+            dt = delta t
+            u = upward factor
+            d = downward factor
+            p = probability to go upwards
+            q = probability to go downwards
+        Args:
+            option_type: str - option type "call" or "put"
+            N: int - N: number of step
 
-        :param str - option_type: option type "call" or "put"
-        :param int - N: number of step
-        :return: float - option price
+        Returns:
+            option price: float
+
         """
         # record value
         dt = self.T / N
-        p = (np.exp(self.r * dt) - d) / (u - d)
+        d = np.exp(- self.sigma * np.sqrt(dt))
+        u = 1 / d
+        p = (np.exp((self.r - self.div) * dt) - d) / (u - d)
         q = 1 - p
-        disc = np.exp(-self.r * dt)
+        disc = np.exp(-(self.r - self.div) * dt)
 
         # initialize underlying asset price
         St = np.asarray([self.S * u ** (N - i) * d ** i for i in range(N + 1)])
@@ -81,12 +121,16 @@ class tree_model(object):
                 C = np.where(C > (self.K - St), C, self.K - St)
         return C[0]
 
-    def European_Binomial_Additive(self,option_type, N):
+    def European_Binomial_Additive(self, option_type, N):
         """
 
-        :param str - option_type: option type "call" or "put"
-        :param int - N: number of step
-        :return: float - option price
+        Args:
+            option_type: str - option type "call" or "put"
+            N: int - N: number of step
+
+        Returns:
+            option price: float
+
         """
 
         # record value
@@ -116,9 +160,13 @@ class tree_model(object):
     def American_Binomial_Additive(self, option_type, N):
         """
 
-        :param str - option_type: option type "call" or "put"
-        :param int - N: number of step
-        :return: float - option price
+        Args:
+            option_type: str - option type "call" or "put"
+            N: int - N: number of step
+
+        Returns:
+            option price: float
+
         """
         # record value
         dt = self.T / N
@@ -147,13 +195,16 @@ class tree_model(object):
                 C = np.where(C > (self.K - St), C, self.K - St)
         return C[0]
 
-
     def European_Trinomial(self, option_type, N, dx):
         """
 
-        :param str - option_type: option type "call" or "put"
-        :param int - N: number of step
-        :return: float - option price
+        Args:
+            option_type: str - option type "call" or "put"
+            N: int - N: number of step
+
+        Returns:
+            option price: float
+
         """
         # record value
         dt = self.T / N
@@ -180,10 +231,13 @@ class tree_model(object):
 
     def American_Trinomial(self, option_type, N, dx):
         """
+        Args:
+            option_type: str - option type "call" or "put"
+            N: int - N: number of step
 
-        :param str - option_type: option type "call" or "put"
-        :param int - N: number of step
-        :return: float - option price
+        Returns:
+            option price: float
+
         """
         # record value
         dt = self.T / N
@@ -212,16 +266,6 @@ class tree_model(object):
                 C = np.where(C >= self.K - St, C, self.K - St)
         return C[0]
 
-    K = 100
-    T = 1
-    S = 100
-    sigma = 0.2
-    r = 0.06
-    div = 0.03
-    N = 3
-    dx = 0.2
-
-
     # mutators and accessors
     def set_S(self, S_):
         self.S = S_
@@ -241,20 +285,29 @@ class tree_model(object):
     def sef_div(self, div_):
         self.div = div_
 
+
 if __name__ == "__main__":
+    # K = 100
+    # T = 1
+    # S = 100
+    # sigma = 0.2
+    # r = 0.06
+    # div = 0.03
+    # N = 3
+    # dx = 0.2
+
     S_ = 100
     K_ = 100
     T_ = 1
     r_ = 0.06
     sigma_ = 0.2
-    u = 1.1
     N = 3
-    model = tree_model(S_,K_,T_,r_,sigma_)
+    model = tree_model(S_, K_, T_, r_, sigma_)
     print("Binomial Multiplicative")
-    print(f"European call Binomial Multiplicative : {model.European_Binomial_Mutiplicative('call', N, u, 1 / u)}")
-    print(f"European put Binomial Multiplicative : {model.European_Binomial_Mutiplicative('put', N, u, 1 / u)}")
-    print(f"American call Binomial Multiplicative : {model.American_Binomial_Multiplicative('call', N, u, 1 / u)}")
-    print(f"American put Binomial Multiplicative : {model.American_Binomial_Multiplicative('put', N, u, 1 / u)}")
+    print(f"European call Binomial Multiplicative : {model.European_Binomial_Multiplicative('call', N)}")
+    print(f"European put Binomial Multiplicative : {model.European_Binomial_Multiplicative('put', N)}")
+    print(f"American call Binomial Multiplicative : {model.American_Binomial_Multiplicative('call', N)}")
+    print(f"American put Binomial Multiplicative : {model.American_Binomial_Multiplicative('put', N)}")
 
     print("\nBinomial Additive")
     print(f"European call Binomial Additive : {model.European_Binomial_Additive('call', N)}")
@@ -262,7 +315,7 @@ if __name__ == "__main__":
     print(f"American call Binomial Additive : {model.American_Binomial_Additive('call', N)}")
     print(f"American put Binomial Additive : {model.American_Binomial_Additive('put', N)}")
 
-    dx =0.2
+    dx = 0.2
     print("\nTrinomial Tree")
     print(f"European call Trinomial : {model.European_Trinomial('call', N, dx)}")
     print(f"European put Trinomial : {model.European_Trinomial('put', N, dx)}")
