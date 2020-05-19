@@ -79,13 +79,15 @@ class tree_model(object):
     def American_Binomial_Multiplicative(self, option_type, N):
         """
         Public Method:
-            American
-             Multiplicative Binomial Tree Model
+            American Multiplicative Binomial Tree Model
             dt = delta t
             u = upward factor
             d = downward factor
             p = probability to go upwards
             q = probability to go downwards
+        References:
+            Cox, Ross, and Rubinstein (1979)
+            http://static.stevereads.com/papers_to_read/option_pricing_a_simplified_approach.pdf
         Args:
             option_type: str - option type "call" or "put"
             N: int - N: number of step
