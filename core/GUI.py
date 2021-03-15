@@ -12,7 +12,7 @@ class StartPage(object):
         self.root.wm_title('Option Price Calculator')
         Label(self.root, text='Please select the model and the option type').pack()
         Label(self.root, text=',click "Continue"  to  parameters setting').pack()
-        Label(self.root, text='Implemented by Yifu He, Junjian Yao and Junyi Yuan, MQF @RBS').pack()
+        Label(self.root, text='Implemented by Yifu Jason He from MQF @RBS').pack()
 
         # initialize the value for models
         model_comvalue = StringVar()
@@ -55,7 +55,7 @@ class CalculatorPage(object):
         self.root.wm_title('Option Price Calculator')
         Label(self.root, text=f'Model type: {self.modelType}').grid(row=0, column=0, columnspan=3)
         Label(self.root, text=f'Option type: {self.optionType}').grid(row=1, column=0, columnspan=3)
-        Label(self.root, text='Implemented by Yifu He, Junjian Yao and Junyi Yuan, MQF @RBS').grid(columnspan=4)
+        Label(self.root, text='Implemented by Yifu Jason He from MQF @RBS').grid(columnspan=4)
         Label(self.root, text='Input parameters: ').grid(row=4, column=0, sticky=W)
 
         if self.modelType == "Black Scholes Model":

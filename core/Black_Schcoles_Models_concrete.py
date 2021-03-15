@@ -271,5 +271,5 @@ if __name__ == "__main__":
     print("put vega0: ", put.get_vega())
     print("put vega1: ", put.get_vega_numerical(dx))
 
-    #print(test_object.get_gamma_numerical())
-    # test git
+    # #print(test_object.get_gamma_numerical())
+    # # test git
