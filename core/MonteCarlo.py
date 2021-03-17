@@ -3,8 +3,6 @@ from core.Pay_Off_Base import PayOffBaseClass
 import numpy as np
 
 
-
-
 class MonteCarlo(object):
     def __init__(self, Payoff_Obj_: PayOffBaseClass, S_, T_, r_, sigma_, div_=0):
         self.Payoff = Payoff_Obj_

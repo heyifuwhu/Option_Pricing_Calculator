@@ -239,11 +239,11 @@ if __name__ == "__main__":
     # test case 2
     ##############################
     S = 200
-    K = 230
-    T = 0.25
-    r = 0
-    sigma = 0.25
-    div = 0.1
+    K = 210
+    T = 1
+    r = 0.00
+    sigma = 0.2
+    div = 0.0
     dx = 0.000001
     call = European_Call_BS(S, K, T, r, sigma, div)
     put = European_Put_BS(S, K, T, r, sigma, div)
